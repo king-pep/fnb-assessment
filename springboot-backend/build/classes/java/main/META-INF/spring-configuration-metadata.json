@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "za.co.fnb.config.ApplicationProperties",
+      "sourceType": "za.co.fnb.config.ApplicationProperties"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}

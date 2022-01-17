@@ -1,0 +1,11 @@
+{
+  "@kingether/generator-kingether": {
+    "appName": "fnb-assessment",
+    "packageName": "za.co.fnb",
+    "databaseType": "postgresql",
+    "dbMigrationTool": "none",
+    "features": [],
+    "buildTool": "gradle",
+    "packageFolder": "za/co/fnb"
+  }
+}
