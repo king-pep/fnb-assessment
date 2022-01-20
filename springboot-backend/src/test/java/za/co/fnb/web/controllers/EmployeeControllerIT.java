@@ -14,6 +14,7 @@ import za.co.fnb.common.AbstractIntegrationTest;
 import za.co.fnb.domain.Employee;
 import za.co.fnb.repositories.EmployeeRepository;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +32,15 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
         employeeRepository.deleteAll();
 
         employeeList = new ArrayList<>();
-        employeeList.add(new Employee(1L, "First Employee"));
-        employeeList.add(new Employee(2L, "Second Employee"));
-        employeeList.add(new Employee(3L, "Third Employee"));
+        employeeList.add(new Employee(1L, "FirstEmployeeFirstName","FirstEmployeeMiddleName",
+            "FirstEmployeeLastName",new Date(),new Date(),"active"));
+        employeeList.add(new Employee(2L, "SecondEmployeeFirstName","SecondEmployeeMiddleName",
+            "SecondEmployeeLastName",new Date(),new Date(),"active"));
         employeeList = employeeRepository.saveAll(employeeList);
+        employeeList.add(new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"));
+        employeeList = employeeRepository.saveAll(employeeList);
+
     }
 
     @Test
@@ -53,24 +59,26 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(get("/api/employees/{id}", employeeId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employee.getText())));
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())));
     }
 
     @Test
     void shouldCreateNewEmployee() throws Exception {
-        Employee employee = new Employee(null, "New Employee");
+        Employee employee =  new Employee(3L, "NewEmployeeFirstName","NewEmployeeMiddleName",
+            "NewEmployeeLastName",new Date(),new Date(),"active");
         this.mockMvc
                 .perform(
                         post("/api/employees")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employee)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.text", is(employee.getText())));
+                .andExpect(jsonPath("$.text", is(employee.getFirstName())));
     }
 
     @Test
-    void shouldReturn400WhenCreateNewEmployeeWithoutText() throws Exception {
-        Employee employee = new Employee(null, null);
+    void shouldReturn400WhenCreateNewEmployeeWithoutLastName() throws Exception {
+        Employee employee =  new Employee(3L, "NewEmployeeFirstName","NewEmployeeMiddleName",
+            null,new Date(),new Date(),"active");
 
         this.mockMvc
                 .perform(
@@ -94,7 +102,7 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
     @Test
     void shouldUpdateEmployee() throws Exception {
         Employee employee = employeeList.get(0);
-        employee.setText("Updated Employee");
+        employee.setFirstName("Updated Employee");
 
         this.mockMvc
                 .perform(
@@ -102,7 +110,7 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employee)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employee.getText())));
+                .andExpect(jsonPath("$.text", is(employee.getFirstName())));
     }
 
     @Test
@@ -112,6 +120,6 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(delete("/api/employees/{id}", employee.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employee.getText())));
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())));
     }
 }
