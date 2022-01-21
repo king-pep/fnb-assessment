@@ -46,9 +46,9 @@ class RoleMasterControllerTest {
     @BeforeEach
     void setUp() {
         this.roleMasterList = new ArrayList<>();
-        this.roleMasterList.add(new RoleMaster(1L, "text 1"));
-        this.roleMasterList.add(new RoleMaster(2L, "text 2"));
-        this.roleMasterList.add(new RoleMaster(3L, "text 3"));
+        this.roleMasterList.add(new RoleMaster(1L, "text 1","Active"));
+        this.roleMasterList.add(new RoleMaster(2L, "text 2","Active"));
+        this.roleMasterList.add(new RoleMaster(3L, "text 3","Active"));
 
         objectMapper.registerModule(new ProblemModule());
         objectMapper.registerModule(new ConstraintViolationProblemModule());
@@ -67,13 +67,13 @@ class RoleMasterControllerTest {
     @Test
     void shouldFindRoleMasterById() throws Exception {
         Long roleMasterId = 1L;
-        RoleMaster roleMaster = new RoleMaster(roleMasterId, "text 1");
+        RoleMaster roleMaster = new RoleMaster(roleMasterId, "text 1","Active");
         given(roleMasterService.findRoleMasterById(roleMasterId)).willReturn(Optional.of(roleMaster));
 
         this.mockMvc
                 .perform(get("/api/role-master/{id}", roleMasterId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
@@ -91,7 +91,7 @@ class RoleMasterControllerTest {
         given(roleMasterService.saveRoleMaster(any(RoleMaster.class)))
                 .willAnswer((invocation) -> invocation.getArgument(0));
 
-        RoleMaster roleMaster = new RoleMaster(1L, "some text");
+        RoleMaster roleMaster = new RoleMaster(1L, "some text","Active");
         this.mockMvc
                 .perform(
                         post("/api/role-master")
@@ -99,12 +99,12 @@ class RoleMasterControllerTest {
                                 .content(objectMapper.writeValueAsString(roleMaster)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
-    void shouldReturn400WhenCreateNewRoleMasterWithoutText() throws Exception {
-        RoleMaster roleMaster = new RoleMaster(null, null);
+    void shouldReturn400WhenCreateNewRoleMasterWithoutRoleName() throws Exception {
+        RoleMaster roleMaster = new RoleMaster(null, null,null);
 
         this.mockMvc
                 .perform(
@@ -117,7 +117,7 @@ class RoleMasterControllerTest {
                         jsonPath(
                                 "$.type",
                                 is("https://zalando.github.io/problem/constraint-violation")))
-                .andExpect(jsonPath("$.title", is("Constraint Violation")))
+                .andExpect(jsonPath("$.roleName", is("Constraint Violation")))
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.violations", hasSize(1)))
                 .andExpect(jsonPath("$.violations[0].field", is("text")))
@@ -128,7 +128,7 @@ class RoleMasterControllerTest {
     @Test
     void shouldUpdateRoleMaster() throws Exception {
         Long roleMasterId = 1L;
-        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Updated text");
+        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Updated text","Active");
         given(roleMasterService.findRoleMasterById(roleMasterId)).willReturn(Optional.of(roleMaster));
         given(roleMasterService.saveRoleMaster(any(RoleMaster.class)))
                 .willAnswer((invocation) -> invocation.getArgument(0));
@@ -139,14 +139,14 @@ class RoleMasterControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(roleMaster)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
     void shouldReturn404WhenUpdatingNonExistingRoleMaster() throws Exception {
         Long roleMasterId = 1L;
         given(roleMasterService.findRoleMasterById(roleMasterId)).willReturn(Optional.empty());
-        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Updated text");
+        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Updated text","Active");
 
         this.mockMvc
                 .perform(
@@ -159,14 +159,14 @@ class RoleMasterControllerTest {
     @Test
     void shouldDeleteRoleMaster() throws Exception {
         Long roleMasterId = 1L;
-        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Some text");
+        RoleMaster roleMaster = new RoleMaster(roleMasterId, "Some text","Active");
         given(roleMasterService.findRoleMasterById(roleMasterId)).willReturn(Optional.of(roleMaster));
         doNothing().when(roleMasterService).deleteRoleMasterById(roleMaster.getId());
 
         this.mockMvc
                 .perform(delete("/api/role-master/{id}", roleMaster.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test

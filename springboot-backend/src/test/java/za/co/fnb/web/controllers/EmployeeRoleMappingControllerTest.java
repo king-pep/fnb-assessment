@@ -15,9 +15,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import za.co.fnb.domain.Employee;
 import za.co.fnb.domain.EmployeeRoleMapping;
+import za.co.fnb.domain.RoleMaster;
 import za.co.fnb.services.EmployeeRoleMappingService;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +51,12 @@ class EmployeeRoleMappingControllerTest {
     @BeforeEach
     void setUp() {
         this.employeeRoleMappingList = new ArrayList<>();
-        this.employeeRoleMappingList.add(new EmployeeRoleMapping(1L, "text 1"));
-        this.employeeRoleMappingList.add(new EmployeeRoleMapping(2L, "text 2"));
-        this.employeeRoleMappingList.add(new EmployeeRoleMapping(3L, "text 3"));
+        employeeRoleMappingList.add(new EmployeeRoleMapping(1L, new Date(),new Employee(1L, "FirstEmployeeFirstName","FirstEmployeeMiddleName",
+            "FirstEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(1L, "First RoleMaster","Active")));
+        employeeRoleMappingList.add(new EmployeeRoleMapping(2L, new Date(),new Employee(2L, "SecondEmployeeFirstName","SecondEmployeeMiddleName",
+            "SecondEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(2L, "Second RoleMaster","Active")));
+        employeeRoleMappingList.add(new EmployeeRoleMapping(3L,new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active")));
 
         objectMapper.registerModule(new ProblemModule());
         objectMapper.registerModule(new ConstraintViolationProblemModule());
@@ -67,13 +75,14 @@ class EmployeeRoleMappingControllerTest {
     @Test
     void shouldFindEmployeeRoleMappingById() throws Exception {
         Long employeeRoleMappingId = 1L;
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, "text 1");
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
         given(employeeRoleMappingService.findEmployeeRoleMappingById(employeeRoleMappingId)).willReturn(Optional.of(employeeRoleMapping));
 
         this.mockMvc
                 .perform(get("/api/employee-role-mapping/{id}", employeeRoleMappingId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employeeRoleMapping.getText())));
+                .andExpect(jsonPath("$.employee", is(employeeRoleMapping.getEmployee())));
     }
 
     @Test
@@ -91,7 +100,8 @@ class EmployeeRoleMappingControllerTest {
         given(employeeRoleMappingService.saveEmployeeRoleMapping(any(EmployeeRoleMapping.class)))
                 .willAnswer((invocation) -> invocation.getArgument(0));
 
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(1L, "some text");
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(1L,new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
         this.mockMvc
                 .perform(
                         post("/api/employee-role-mapping")
@@ -99,12 +109,13 @@ class EmployeeRoleMappingControllerTest {
                                 .content(objectMapper.writeValueAsString(employeeRoleMapping)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.text", is(employeeRoleMapping.getText())));
+                .andExpect(jsonPath("$.employee", is(employeeRoleMapping.getEmployee())));
     }
 
     @Test
     void shouldReturn400WhenCreateNewEmployeeRoleMappingWithoutText() throws Exception {
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(null, null);
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(0L,new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
 
         this.mockMvc
                 .perform(
@@ -128,7 +139,10 @@ class EmployeeRoleMappingControllerTest {
     @Test
     void shouldUpdateEmployeeRoleMapping() throws Exception {
         Long employeeRoleMappingId = 1L;
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, "Updated text");
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId,new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
+
+
         given(employeeRoleMappingService.findEmployeeRoleMappingById(employeeRoleMappingId)).willReturn(Optional.of(employeeRoleMapping));
         given(employeeRoleMappingService.saveEmployeeRoleMapping(any(EmployeeRoleMapping.class)))
                 .willAnswer((invocation) -> invocation.getArgument(0));
@@ -139,14 +153,15 @@ class EmployeeRoleMappingControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employeeRoleMapping)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employeeRoleMapping.getText())));
+                .andExpect(jsonPath("$.effectiveDate", is(employeeRoleMapping.getEffectiveDate())));
     }
 
     @Test
     void shouldReturn404WhenUpdatingNonExistingEmployeeRoleMapping() throws Exception {
         Long employeeRoleMappingId = 1L;
         given(employeeRoleMappingService.findEmployeeRoleMappingById(employeeRoleMappingId)).willReturn(Optional.empty());
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, "Updated text");
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
 
         this.mockMvc
                 .perform(
@@ -159,14 +174,15 @@ class EmployeeRoleMappingControllerTest {
     @Test
     void shouldDeleteEmployeeRoleMapping() throws Exception {
         Long employeeRoleMappingId = 1L;
-        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, "Some text");
+        EmployeeRoleMapping employeeRoleMapping = new EmployeeRoleMapping(employeeRoleMappingId, new Date(),new Employee(3L, "ThirdEmployeeFirstName","ThirdEmployeeMiddleName",
+            "ThirdEmployeeLastName",new Date(),new Date(),"active"),new RoleMaster(3L, "Third RoleMaster","Active"));
         given(employeeRoleMappingService.findEmployeeRoleMappingById(employeeRoleMappingId)).willReturn(Optional.of(employeeRoleMapping));
         doNothing().when(employeeRoleMappingService).deleteEmployeeRoleMappingById(employeeRoleMapping.getId());
 
         this.mockMvc
                 .perform(delete("/api/employee-role-mapping/{id}", employeeRoleMapping.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(employeeRoleMapping.getText())));
+                .andExpect(jsonPath("$.id", is(employeeRoleMapping.getId())));
     }
 
     @Test

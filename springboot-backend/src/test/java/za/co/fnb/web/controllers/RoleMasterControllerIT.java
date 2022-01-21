@@ -31,9 +31,9 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
         roleMasterRepository.deleteAll();
 
         roleMasterList = new ArrayList<>();
-        roleMasterList.add(new RoleMaster(1L, "First RoleMaster"));
-        roleMasterList.add(new RoleMaster(2L, "Second RoleMaster"));
-        roleMasterList.add(new RoleMaster(3L, "Third RoleMaster"));
+        roleMasterList.add(new RoleMaster(1L, "First RoleMaster","Active"));
+        roleMasterList.add(new RoleMaster(2L, "Second RoleMaster","Active"));
+        roleMasterList.add(new RoleMaster(3L, "Third RoleMaster","Active"));
         roleMasterList = roleMasterRepository.saveAll(roleMasterList);
     }
 
@@ -53,24 +53,24 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(get("/api/role-master/{id}", roleMasterId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
     void shouldCreateNewRoleMaster() throws Exception {
-        RoleMaster roleMaster = new RoleMaster(null, "New RoleMaster");
+        RoleMaster roleMaster = new RoleMaster(null, "New RoleMaster","Active");
         this.mockMvc
                 .perform(
                         post("/api/role-master")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(roleMaster)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
     void shouldReturn400WhenCreateNewRoleMasterWithoutText() throws Exception {
-        RoleMaster roleMaster = new RoleMaster(null, null);
+        RoleMaster roleMaster = new RoleMaster(null, null,null);
 
         this.mockMvc
                 .perform(
@@ -83,7 +83,7 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
                         jsonPath(
                                 "$.type",
                                 is("https://zalando.github.io/problem/constraint-violation")))
-                .andExpect(jsonPath("$.title", is("Constraint Violation")))
+                .andExpect(jsonPath("$.roleName", is("Constraint Violation")))
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.violations", hasSize(1)))
                 .andExpect(jsonPath("$.violations[0].field", is("text")))
@@ -94,7 +94,7 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
     @Test
     void shouldUpdateRoleMaster() throws Exception {
         RoleMaster roleMaster = roleMasterList.get(0);
-        roleMaster.setText("Updated RoleMaster");
+        roleMaster.setRoleName("Updated RoleMaster");
 
         this.mockMvc
                 .perform(
@@ -102,7 +102,7 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(roleMaster)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 
     @Test
@@ -112,6 +112,6 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
         this.mockMvc
                 .perform(delete("/api/role-master/{id}", roleMaster.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text", is(roleMaster.getText())));
+                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
     }
 }

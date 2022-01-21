@@ -4,6 +4,8 @@ za/co/fnb/web/controllers/EmployeeController.java
  za.co.fnb.web.controllers.EmployeeController
 za/co/fnb/services/impl/EmployeeServiceImpl.java
  za.co.fnb.services.impl.EmployeeServiceImpl
+za/co/fnb/services/impl/RoleMasterServiceImpl.java
+ za.co.fnb.services.impl.RoleMasterServiceImpl
 za/co/fnb/repositories/EmployeeRoleMappingRepository.java
  za.co.fnb.repositories.EmployeeRoleMappingRepository
 za/co/fnb/domain/dto/EmployeeDTO.java
@@ -22,6 +24,8 @@ za/co/fnb/web/controllers/RoleMasterController.java
  za.co.fnb.web.controllers.RoleMasterController
 za/co/fnb/domain/RoleMaster.java
  za.co.fnb.domain.RoleMaster
+za/co/fnb/services/impl/EmployeeRoleMappingServiceImpl.java
+ za.co.fnb.services.impl.EmployeeRoleMappingServiceImpl
 za/co/fnb/domain/Employee.java
  za.co.fnb.domain.Employee
 za/co/fnb/config/ApplicationProperties.java
