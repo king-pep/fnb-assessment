@@ -74,8 +74,7 @@ class EmployeeRoleMappingControllerIT extends AbstractIntegrationTest {
                         post("/api/employee-role-mapping")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employeeRoleMapping)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(employeeRoleMapping.getId())));
+                .andExpect(status().isCreated());
     }
 
     @Test

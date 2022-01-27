@@ -72,7 +72,7 @@ class EmployeeControllerIT extends AbstractIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employee)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.text", is(employee.getFirstName())));
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())));
     }
 
     @Test

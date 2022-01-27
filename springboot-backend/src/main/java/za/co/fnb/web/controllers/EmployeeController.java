@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import za.co.fnb.config.logging.Loggable;
 import za.co.fnb.domain.Employee;
 import za.co.fnb.domain.EmployeeRoleMapping;
 import za.co.fnb.domain.dto.EmployeeDTO;
@@ -55,6 +56,7 @@ public class EmployeeController {
 
         return employeeService.findAll();
     }
+
     @GetMapping("/employees-with-roles")
     public List<EmployeeVM> getAllEmployeeWithRole() {
   employeeList = new ArrayList<>();

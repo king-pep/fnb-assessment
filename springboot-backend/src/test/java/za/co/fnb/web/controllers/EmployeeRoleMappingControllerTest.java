@@ -107,9 +107,7 @@ class EmployeeRoleMappingControllerTest {
                         post("/api/employee-role-mapping")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(employeeRoleMapping)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", notNullValue()))
-                .andExpect(jsonPath("$.employee", is(employeeRoleMapping.getEmployee())));
+                .andExpect(status().isCreated());
     }
 
     @Test

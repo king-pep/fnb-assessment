@@ -35,12 +35,13 @@ public class LoggingAspect {
 
     @Pointcut(
             "@within(za.co.fnb.config.logging.Loggable) || "
-                    + "@annotation(za.co.fnb.config.logging.Loggable)")
+                    + "@annotation(za.co.fnb.config.logging.Loggable)" + "|| within(za.co.fnb.services..*)" +
+                "|| within(za.co.fnb.web.controllers..*)" + "|| within(za.co.fnb.repositories..*)")
     public void applicationPackagePointcut() {
         // pointcut definition
     }
 
-    @AfterThrowing(pointcut = "applicationPackagePointcut()", throwing = "e")
+    @AfterThrowing(pointcut = "applicationPackagePointcut() && springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         if (env.acceptsProfiles(Profiles.of(AppConstants.PROFILE_NOT_PROD))) {
             log.error(

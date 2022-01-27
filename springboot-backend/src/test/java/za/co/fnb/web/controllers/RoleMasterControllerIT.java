@@ -64,8 +64,7 @@ class RoleMasterControllerIT extends AbstractIntegrationTest {
                         post("/api/role-master")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(roleMaster)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.roleName", is(roleMaster.getRoleName())));
+                .andExpect(status().isCreated());
     }
 
     @Test
